@@ -7,37 +7,39 @@ run(
 
 		let range2: string[] = [];
 		let modified: boolean = false;
+		let indexOfLRange: number[] = [];
+		let indexOfRRange: number[] = [];
 
 		for (const line of input) {
 			if (line.match(/\d-\d/)) range.push(line);
 		}
-		let [indexOfLRange, indexOfRRange] = range[0].split("-").map(Number);
-		console.log(range);
-		console.log(range2);
-		do {
-			modified = false;
-			for (const rangeLine of range) {
-				const [startRange, endRange] = rangeLine.split("-").map(Number);
+		[indexOfLRange[0], indexOfRRange[0]] = range[0].split("-").map(Number);
+		function group(x: number) {
+			do {
+				modified = false;
+				for (const rangeLine of range) {
+					const [startRange, endRange] = rangeLine.split("-").map(Number);
 
-				if (indexOfLRange > endRange || indexOfRRange < startRange) {
-					console.log("nie:" + rangeLine);
-					range2.push(rangeLine);
-				} else {
-					indexOfLRange = startRange > indexOfLRange ? indexOfLRange : startRange;
-					indexOfRRange = endRange < indexOfRRange ? indexOfRRange : endRange;
-					modified = true;
-					console.log(rangeLine);
+					if (indexOfLRange[x] > endRange || indexOfRRange[x] < startRange) {
+						range2.push(rangeLine);
+					} else {
+						indexOfLRange[x] = startRange > indexOfLRange[x] ? indexOfLRange[x] : startRange;
+						indexOfRRange[x] = endRange < indexOfRRange[x] ? indexOfRRange[x] : endRange;
+						modified = true;
+					}
 				}
-			}
-			console.log(modified);
 
-			range = range2;
-			console.log(range);
-			console.log(range2);
-		} while (modified);
+				range = range2;
+				range2 = [];
+			} while (modified);
+		}
+		for (let i = 0; range.length !== 0; i++) {
+			group(i);
+		}
+		for (let indexLine in indexOfLRange) {
+			sum += indexOfRRange[indexLine] - indexOfLRange[indexLine] + 1;
+		}
 
-		console.log("L: " + indexOfLRange);
-		console.log("R: " + indexOfRRange);
 		return sum;
 	},
 	{ inputMode: "lines" },
